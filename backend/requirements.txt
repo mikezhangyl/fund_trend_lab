@@ -1,0 +1,19 @@
+# FastAPI Web框架
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# 数据库
+# sqlite3 (Python标准库，无需安装)
+
+# 数据源
+akshare>=1.18.0
+
+# 数据处理
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Pydantic用于数据验证
+pydantic>=2.10.0
+
+# CORS支持
+python-multipart>=0.0.6
