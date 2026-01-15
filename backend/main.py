@@ -23,6 +23,7 @@ from database import (
 )
 from services.data_fetcher import DataFetcher
 from services.sync_service import sync_service
+from services.indicators import indicator_service
 
 
 app = FastAPI(
@@ -138,6 +139,29 @@ async def get_instrument_detail(code: str) -> Instrument:
         )
     except HTTPException:
         raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/indicators/{code}")
+async def get_indicators(code: str, days: int = 20) -> Dict:
+    """
+    获取基金技术指标
+    
+    用于识别潜在急涨信号，包含：
+    - momentum: 动量（涨跌幅%）
+    - relative_strength: 相对强度（vs沪深300）
+    - volatility: 波动率
+    - vol_ratio: 波动率压缩比
+    - warning_level: 预警等级 (HIGH/MEDIUM/LOW)
+    
+    Args:
+        code: 基金代码
+        days: 计算周期天数（默认20）
+    """
+    try:
+        result = indicator_service.calculate_indicators(code, days)
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

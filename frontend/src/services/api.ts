@@ -62,6 +62,34 @@ export async function deleteInstrument(
   return response.data;
 }
 
+// ==================== 技术指标 ====================
+
+export interface IndicatorData {
+  fund_code: string;
+  period_days: number;
+  momentum: number;
+  relative_strength: number;
+  index_return: number;
+  volatility: number;
+  vol_ratio: number;
+  analysis: string[];
+  warning_level: 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
+  score: number;
+}
+
+/**
+ * 获取基金技术指标
+ */
+export async function getIndicators(
+  code: string,
+  days: number = 20
+): Promise<IndicatorData> {
+  const response = await api.get<IndicatorData>(`/indicators/${code}`, {
+    params: { days }
+  });
+  return response.data;
+}
+
 // ==================== 时间序列数据 ====================
 
 /**
