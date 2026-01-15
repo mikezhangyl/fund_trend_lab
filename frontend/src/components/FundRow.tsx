@@ -1,11 +1,12 @@
 /**
  * 基金行组件 - 横向展示3个时间区间的图表
  */
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { TrendChartEcharts } from './TrendChartEcharts';
+import { ChartModal } from './ChartModal';
 import type { Instrument, TimeRange, TimeseriesPoint } from '../types';
 
-interface FundRowProps {
+export interface FundRowProps {
   instrument: Instrument;
   indexInstrument: Instrument;
   timeRanges: TimeRange[];
@@ -28,6 +29,19 @@ export function FundRow({
   onDateClick,
   onDelete,
 }: FundRowProps) {
+  // 全屏模态框状态
+  const [modalData, setModalData] = useState<{
+    isOpen: boolean;
+    fundData: TimeseriesPoint[];
+    indexData: TimeseriesPoint[];
+    rangeLabel: string;
+  }>({
+    isOpen: false,
+    fundData: [],
+    indexData: [],
+    rangeLabel: '',
+  });
+
   // 为每个时间区间计算极值（归一化后的百分比）
   const extremesMap = useMemo(() => {
     const map: Record<number, {
@@ -137,7 +151,7 @@ export function FundRow({
         gap: '16px',
         marginTop: '24px',
       }}>
-        {timeRanges.map((range, idx) => {
+        {timeRanges.map((range) => {
           const chartData = chartDataMap[range.days];
           const extremes = extremesMap[range.days];
 
@@ -222,17 +236,45 @@ export function FundRow({
                 {range.label}
               </div>
 
-              {/* ECharts图表 */}
-              <TrendChartEcharts
-                id={`${instrument.code}-${range.days}`}
-                fundData={chartData.fundData}
-                indexData={chartData.indexData}
-                fundName={instrument.name}
-                indexName={indexInstrument.name}
-                onDateHover={onDateHover}
-                onDateClick={onDateClick}
-                height={200}
-              />
+              {/* ECharts图表 - 点击放大 */}
+              <div
+                onClick={() => setModalData({
+                  isOpen: true,
+                  fundData: chartData.fundData,
+                  indexData: chartData.indexData,
+                  rangeLabel: range.label,
+                })}
+                style={{
+                  cursor: 'zoom-in',
+                  position: 'relative',
+                }}
+                title="点击放大查看"
+              >
+                <TrendChartEcharts
+                  id={`${instrument.code}-${range.days}`}
+                  fundData={chartData.fundData}
+                  indexData={chartData.indexData}
+                  fundName={instrument.name}
+                  indexName={indexInstrument.name}
+                  onDateHover={onDateHover}
+                  onDateClick={onDateClick}
+                  height={200}
+                />
+                {/* 放大图标 */}
+                <div style={{
+                  position: 'absolute',
+                  top: '4px',
+                  right: '4px',
+                  backgroundColor: 'rgba(255,255,255,0.8)',
+                  borderRadius: '4px',
+                  padding: '2px 6px',
+                  fontSize: '10px',
+                  color: '#6b7280',
+                  pointerEvents: 'none',
+                }}>
+                  🔍 点击放大
+                </div>
+              </div>
 
               {/* 极值标注 */}
               {extremes && (
@@ -268,6 +310,17 @@ export function FundRow({
           );
         })}
       </div>
+
+      {/* 全屏模态框 */}
+      <ChartModal
+        isOpen={modalData.isOpen}
+        onClose={() => setModalData(prev => ({ ...prev, isOpen: false }))}
+        fundData={modalData.fundData}
+        indexData={modalData.indexData}
+        fundName={instrument.name}
+        indexName={indexInstrument.name}
+        rangeLabel={modalData.rangeLabel}
+      />
     </div>
   );
 }

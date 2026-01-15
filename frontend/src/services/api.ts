@@ -5,7 +5,6 @@ import axios from 'axios';
 import type {
   Instrument,
   TimeseriesPoint,
-  TimeRange,
   UIState,
   SyncStatus
 } from '../types';
@@ -19,6 +18,54 @@ const api = axios.create({
 });
 
 // ==================== 基金/指数管理 ====================
+
+/**
+ * 批量添加基金请求参数
+ */
+export interface BatchAddFundsRequest {
+  codes: string[];
+  set_favorite?: boolean;
+  sync_data?: boolean;
+}
+
+/**
+ * 批量添加基金响应
+ */
+export interface BatchAddFundsResponse {
+  success: boolean;
+  added: number;
+  synced: number;
+  favorites_updated: number;
+  results: Array<{
+    code: string;
+    name: string;
+    status: string;
+  }>;
+  errors: Array<{
+    code: string;
+    error: string;
+  }>;
+}
+
+/**
+ * 批量添加基金
+ *
+ * @param codes 基金代码数组
+ * @param setFavorite 是否设为收藏（默认false）
+ * @param syncData 是否同步数据（默认true）
+ */
+export async function batchAddFunds(
+  codes: string[],
+  setFavorite: boolean = false,
+  syncData: boolean = true
+): Promise<BatchAddFundsResponse> {
+  const response = await api.post<BatchAddFundsResponse>('/funds/batch', {
+    codes,
+    set_favorite: setFavorite,
+    sync_data: syncData
+  });
+  return response.data;
+}
 
 /**
  * 获取所有基金/指数列表
@@ -55,10 +102,20 @@ export async function addInstrument(
 /**
  * 删除基金/指数及其所有数据
  */
+export interface DeleteInstrumentResponse {
+  success: boolean;
+  message: string;
+  details: {
+    code: string;
+    instrument_deleted: number;
+    message: string;
+  };
+}
+
 export async function deleteInstrument(
   code: string
-): Promise<{ success: boolean; message: string; details: any }> {
-  const response = await api.delete(`/instruments/${code}`);
+): Promise<DeleteInstrumentResponse> {
+  const response = await api.delete<DeleteInstrumentResponse>(`/instruments/${code}`);
   return response.data;
 }
 
@@ -86,6 +143,62 @@ export async function getIndicators(
 ): Promise<IndicatorData> {
   const response = await api.get<IndicatorData>(`/indicators/${code}`, {
     params: { days }
+  });
+  return response.data;
+}
+
+// ==================== 急涨事件 ====================
+
+export interface SurgeEvent {
+  id: number;
+  code: string;
+  start_date: string;
+  end_date: string;
+  window: number;
+  total_gain: number;
+  slope_first: number;
+  slope_second: number;
+  is_accelerating: number;
+}
+
+/**
+ * 获取基金的急涨事件
+ */
+export async function getSurgeEvents(code: string): Promise<SurgeEvent[]> {
+  const response = await api.get<SurgeEvent[]>(`/surge_events/${code}`);
+  return response.data;
+}
+
+// ==================== 连续上涨阶段 ====================
+
+export interface UptrendPhase {
+  start_date: string;
+  end_date: string;
+  duration_days: number;
+  total_gain: number;
+  max_drawdown: number;
+  avg_daily_gain: number;
+  slope_first: number;
+  slope_second: number;
+  is_accelerating: boolean;
+}
+
+/**
+ * 获取基金的连续上涨阶段
+ * 新算法：期间回撤超过阈值则认为是新阶段
+ */
+export async function getUptrendPhases(
+  code: string,
+  maxDrawdown: number = 5.0,
+  minGain: number = 10.0,
+  minDuration: number = 5
+): Promise<UptrendPhase[]> {
+  const response = await api.get<UptrendPhase[]>(`/uptrend_phases/${code}`, {
+    params: {
+      max_drawdown: maxDrawdown,
+      min_gain: minGain,
+      min_duration: minDuration,
+    }
   });
   return response.data;
 }
@@ -167,6 +280,39 @@ export async function getSyncStatus(code: string): Promise<SyncStatus> {
  */
 export async function getSyncingList(): Promise<string[]> {
   const response = await api.get<string[]>('/sync/syncing');
+  return response.data;
+}
+
+// ==================== 收藏管理 ====================
+
+export interface FavoritesResponse {
+  count: number;
+  codes: string[];
+}
+
+export interface FavoritesSetResponse {
+  success: boolean;
+  count: number;
+  codes: string[];
+  mode: string;
+}
+
+/**
+ * 获取收藏的基金列表
+ */
+export async function getFavorites(): Promise<FavoritesResponse> {
+  const response = await api.get<FavoritesResponse>('/favorites');
+  return response.data;
+}
+
+/**
+ * 设置/更新收藏列表
+ */
+export async function setFavorites(
+  codes: string[],
+  mode: 'replace' | 'add' | 'remove' = 'replace'
+): Promise<FavoritesSetResponse> {
+  const response = await api.post<FavoritesSetResponse>('/favorites', { codes, mode });
   return response.data;
 }
 

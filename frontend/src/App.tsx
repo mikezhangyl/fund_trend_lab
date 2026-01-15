@@ -5,6 +5,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useAppState } from './hooks/useAppState';
 import { useChartData } from './hooks/useChartData';
+import { useAllIndicators } from './hooks/useAllIndicators';
 import { FundCard } from './components/FundCard';
 import type { Instrument } from './types';
 import * as api from './services/api';
@@ -17,11 +18,13 @@ const TIME_RANGE_OPTIONS = [
 ];
 
 // 排序选项
-type SortOption = 'newest' | 'name' | 'code';
+type SortOption = 'newest' | 'name' | 'code' | 'momentum' | 'rs';
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'newest', label: '最新' },
-  { value: 'name', label: '名称' },
-  { value: 'code', label: '代码' },
+  { value: 'newest', label: '最新添加' },
+  { value: 'momentum', label: '动量（高→低）' },
+  { value: 'rs', label: '相对强度（高→低）' },
+  { value: 'name', label: '名称（A→Z）' },
+  { value: 'code', label: '代码（A→Z）' },
 ];
 
 // 单个基金卡片包装组件
@@ -61,6 +64,7 @@ function FundCardWithData({
 function App() {
   const { state, addInstrument, removeInstrument } = useAppState();
   const [inputCode, setInputCode] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState(365); // 默认1年
   const [sortBy, setSortBy] = useState<SortOption>('newest'); // 排序方式
@@ -72,6 +76,10 @@ function App() {
     type: 'index',
   }), [state.selectedIndexCode]);
 
+  // 获取所有基金的指标数据（用于排序）
+  const fundCodes = useMemo(() => state.instruments.map(inst => inst.code), [state.instruments]);
+  const { data: indicatorsMap } = useAllIndicators(fundCodes, 20); // 使用20天指标排序
+
   // 处理日期悬停
   const handleDateHover = useCallback((date: string | null) => {
     setHoveredDate(date);
@@ -82,24 +90,53 @@ function App() {
     console.log('点击日期:', date);
   }, []);
 
-  // 处理添加基金
+  // 解析输入的基金代码（支持逗号、空格、换行分隔）
+  const parseInputCodes = (input: string): string[] => {
+    return input
+      .split(/[\s,，\n]+/) // 按空格、逗号、换行分隔
+      .map(code => code.trim())
+      .filter(code => code.length > 0); // 过滤空字符串
+  };
+
+  // 处理添加基金（使用批量API）
   const handleAddFund = async () => {
-    if (!inputCode.trim()) return;
+    if (!inputCode.trim() || isAdding) return;
+
+    const codes = parseInputCodes(inputCode);
+
+    if (codes.length === 0) {
+      alert('请输入有效的基金代码');
+      return;
+    }
+
+    setIsAdding(true);
 
     try {
-      const instrumentInfo = await api.getInstrument(inputCode);
-      await addInstrument(inputCode, instrumentInfo.name, instrumentInfo.type);
+      // 使用批量添加API
+      const result = await api.batchAddFunds(codes, false, true);
 
-      try {
-        await api.syncInstruments([inputCode]);
-        console.log(`已启动基金 ${inputCode} 的数据同步`);
-      } catch (syncErr) {
-        console.error('启动数据同步失败:', syncErr);
+      // 将成功添加的基金加入到本地状态
+      for (const item of result.results) {
+        if (item.status === 'added') {
+          await addInstrument(item.code, item.name, 'fund');
+        }
       }
 
-      setInputCode(''); // 清空输入框
+      // 显示结果
+      const successMsg = `✅ 成功添加 ${result.added} 只基金，正在后台同步数据...`;
+      const errorMsg = result.errors.length > 0
+        ? `\n\n❌ 失败 ${result.errors.length} 只：\n${result.errors.map(e => `${e.code}: ${e.error}`).join('\n')}`
+        : '';
+
+      alert(successMsg + errorMsg);
+
+      if (result.added > 0) {
+        setInputCode(''); // 只在成功时清空
+      }
     } catch (err) {
       alert('添加基金失败：' + (err instanceof Error ? err.message : '未知错误'));
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -114,12 +151,28 @@ function App() {
       case 'code':
         // 按代码排序
         return instruments.sort((a, b) => a.code.localeCompare(b.code));
+      case 'momentum':
+        // 按动量排序（高到低）
+        if (!indicatorsMap) return instruments;
+        return instruments.sort((a, b) => {
+          const aMomentum = indicatorsMap[a.code]?.momentum || 0;
+          const bMomentum = indicatorsMap[b.code]?.momentum || 0;
+          return bMomentum - aMomentum; // 降序
+        });
+      case 'rs':
+        // 按相对强度排序（高到低）
+        if (!indicatorsMap) return instruments;
+        return instruments.sort((a, b) => {
+          const aRS = indicatorsMap[a.code]?.relative_strength || 0;
+          const bRS = indicatorsMap[b.code]?.relative_strength || 0;
+          return bRS - aRS; // 降序
+        });
       case 'newest':
       default:
         // 新添加的在前面
         return instruments.reverse();
     }
-  }, [state.instruments, sortBy]);
+  }, [state.instruments, sortBy, indicatorsMap]);
 
   return (
     <div style={{
@@ -166,29 +219,33 @@ function App() {
               value={inputCode}
               onChange={(e) => setInputCode(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddFund()}
-              placeholder="基金代码"
+              placeholder="基金代码（支持多个，逗号分隔）"
+              disabled={isAdding}
               style={{
                 padding: '6px 10px',
                 border: '1px solid #d1d5db',
                 borderRadius: '4px',
                 fontSize: '14px',
-                width: '100px',
+                width: '240px',
+                opacity: isAdding ? 0.6 : 1,
+                cursor: isAdding ? 'not-allowed' : 'text',
               }}
             />
             <button
               onClick={handleAddFund}
+              disabled={isAdding}
               style={{
                 padding: '6px 12px',
-                backgroundColor: '#3b82f6',
+                backgroundColor: isAdding ? '#9ca3af' : '#3b82f6',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
                 fontSize: '14px',
-                cursor: 'pointer',
+                cursor: isAdding ? 'not-allowed' : 'pointer',
                 fontWeight: 'bold',
               }}
             >
-              添加
+              {isAdding ? '添加中...' : '添加'}
             </button>
           </div>
 

@@ -1,20 +1,24 @@
 /**
- * 图表数据管理Hook
+ * 图表数据管理Hook（使用 React Query）
  * 获取单个基金的单个时间区间数据
+ *
+ * 缓存策略：基金净值每天 22:00 更新，缓存到下一个 22:00
  */
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { TimeseriesPoint } from '../types';
 import * as api from '../services/api';
+import { queryKeys } from '../lib/queryClient';
 
 export interface ChartDataResult {
   fundData: TimeseriesPoint[];
   indexData: TimeseriesPoint[];
   loading: boolean;
   error: string | null;
+  isFetching: boolean;  // 后台重新获取中
 }
 
 /**
- * 获取单个基金的单个时间区间数据
+ * 获取单个基金的单个时间区间数据（React Query 版本）
  */
 export function useChartData(
   fundCode: string,
@@ -22,48 +26,38 @@ export function useChartData(
   days: number,
   autoLoad: boolean = true
 ): ChartDataResult {
-  const [fundData, setFundData] = useState<TimeseriesPoint[]>([]);
-  const [indexData, setIndexData] = useState<TimeseriesPoint[]>([]);
-  const [loading, setLoading] = useState(autoLoad);
-  const [error, setError] = useState<string | null>(null);
+  // 使用 React Query 的 useQuery
+  const query = useQuery({
+    // 查询键
+    queryKey: queryKeys.chartData(fundCode, indexCode, days),
 
-  useEffect(() => {
-    if (!autoLoad || !fundCode || !indexCode) return;
+    // 查询函数
+    queryFn: async () => {
+      console.log('[useChartData] 从 API 获取:', fundCode, days, 'days');
+      const data = await api.getChartData(fundCode, indexCode, days);
+      console.log('[useChartData] 数据获取成功:', {
+        fundCode,
+        days,
+        fundDataLength: data.fundData.length,
+        indexDataLength: data.indexData.length,
+      });
+      return data;
+    },
 
-    let isMounted = true;
+    // 只有在 autoLoad 为 true 且参数完整时才启用
+    enabled: autoLoad && !!fundCode && !!indexCode,
 
-    const loadData = async () => {
-      setLoading(true);
-      setError(null);
+    // 使用配置的缓存时间（在 queryClient.ts 中设置）
+    // staleTime 和 gcTime 会自动从 queryClient 继承
+  });
 
-      try {
-        const data = await api.getChartData(fundCode, indexCode, days);
-        if (isMounted) {
-          console.log('[useChartData]', fundCode, days, 'days, fetched:', {
-            fundDataLength: data.fundData.length,
-            indexDataLength: data.indexData.length,
-          });
-          setFundData(data.fundData);
-          setIndexData(data.indexData);
-          setLoading(false);
-        }
-      } catch (err) {
-        if (isMounted) {
-          const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-          setError(errorMessage);
-          setLoading(false);
-        }
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [fundCode, indexCode, days, autoLoad]);
-
-  return { fundData, indexData, loading, error };
+  return {
+    fundData: query.data?.fundData ?? [],
+    indexData: query.data?.indexData ?? [],
+    loading: query.isLoading,
+    error: query.error?.message ?? null,
+    isFetching: query.isFetching,  // 后台重新获取时为 true
+  };
 }
 
 /**
@@ -72,7 +66,10 @@ export function useChartData(
 export function calculateExtremes(
   data: TimeseriesPoint[],
   lockedDate?: string
-): { max: { value: number; date: string }; min: { value: number; date: string } } {
+): {
+  max: { value: number; date: string; percentChange?: number };
+  min: { value: number; date: string; percentChange?: number };
+} {
   if (!data || data.length === 0) {
     return {
       max: { value: 0, date: '' },

@@ -2,10 +2,11 @@
  * ECharts趋势图表组件
  * 高性能时间序列图表，支持跨图同步时间线
  */
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import * as echarts from 'echarts';
 import type { TimeseriesPoint } from '../types';
+import type { SurgeEvent } from '../services/api';
 
 /**
  * 填充缺失日期（周末、节假日）
@@ -63,10 +64,17 @@ interface TrendChartEchartsProps {
   onDateHover?: (date: string | null) => void;
   onDateClick?: (date: string) => void;
   height?: number;
+  surgeEvents?: SurgeEvent[];
+  uptrendPhases?: Array<{
+    start_date: string;
+    end_date: string;
+    total_gain: number;
+    is_accelerating: boolean;
+    slope_second: number;
+  }>;
 }
 
 export function TrendChartEcharts({
-  id,
   fundData,
   indexData = [],
   fundName,
@@ -74,29 +82,54 @@ export function TrendChartEcharts({
   onDateHover,
   onDateClick,
   height = 200,
+  surgeEvents = [],
+  uptrendPhases = [],
 }: TrendChartEchartsProps) {
   const chartRef = useRef<ReactECharts>(null);
 
   // 获取日期范围
-  const allDates = useMemo(() => {
+  const allDates = useMemo((): { start: string; end: string } | null => {
     const dates = [
       ...fundData.map(d => d.date),
       ...indexData.map(d => d.date),
     ];
-    if (dates.length === 0) return [];
+    if (dates.length === 0) return null;
 
     const sorted = dates.sort();
     return { start: sorted[0], end: sorted[sorted.length - 1] };
   }, [fundData, indexData]);
 
+  // 合并重叠的急涨事件（只保留最大的非重叠区间）
+  const mergedSurgeEvents = useMemo(() => {
+    if (surgeEvents.length === 0) return [];
+
+    // 按结束日期降序排列，优先保留最近的事件
+    const sorted = [...surgeEvents].sort((a, b) =>
+      b.end_date.localeCompare(a.end_date)
+    );
+
+    const merged: typeof surgeEvents = [];
+    for (const event of sorted) {
+      // 检查是否与已选事件重叠
+      const overlaps = merged.some(m =>
+        !(event.end_date < m.start_date || event.start_date > m.end_date)
+      );
+      if (!overlaps) {
+        merged.push(event);
+      }
+    }
+
+    return merged.sort((a, b) => a.start_date.localeCompare(b.start_date));
+  }, [surgeEvents]);
+
   // 填充缺失日期
   const filledFundData = useMemo(() => {
-    if (!allDates.start || !allDates.end) return [];
+    if (!allDates?.start || !allDates?.end) return [];
     return fillMissingDates(fundData, allDates.start, allDates.end);
   }, [fundData, allDates]);
 
   const filledIndexData = useMemo(() => {
-    if (!allDates.start || !allDates.end) return [];
+    if (!allDates?.start || !allDates?.end) return [];
     return fillMissingDates(indexData, allDates.start, allDates.end);
   }, [indexData, allDates]);
 
@@ -144,7 +177,7 @@ export function TrendChartEcharts({
   const normalizedIndexValues = getNormalizedData(indexValues);
 
   // Y轴配置：显示百分比，只基于目标基金数据计算范围
-  const getYAxisConfig = (): echarts.EChartOption.YAxisComponent => {
+  const getYAxisConfig = () => {
     // 只使用基金数据计算Y轴范围（不包含参考指数）
     const fundOnlyValues = normalizedFundValues.filter((v): v is number => v !== null);
 
@@ -187,7 +220,7 @@ export function TrendChartEcharts({
   };
 
   // ECharts配置
-  const option: echarts.EChartOption = {
+  const option: echarts.EChartsOption = {
     animation: false,
     grid: {
       left: 40, // 给Y轴标签留空间
@@ -206,7 +239,7 @@ export function TrendChartEcharts({
       position: (
         point: [number, number],
         _params: any,
-        _dom: HTMLElement,
+        _dom: any,
         _rect: any,
         size: { contentSize: [number, number]; viewSize: [number, number] }
       ) => {
@@ -265,8 +298,8 @@ export function TrendChartEcharts({
       type: 'category',
       data: dates,
       show: false,
-    },
-    yAxis: getYAxisConfig(),
+    } as any,
+    yAxis: getYAxisConfig() as any,
     series: [
       {
         name: fundName,
@@ -281,6 +314,96 @@ export function TrendChartEcharts({
         emphasis: {
           focus: 'series',
         },
+        // 区域标注：根据上涨速度(斜率)显示不同深浅的红色（5个层级）
+        // 斜率层级：<0.3%/天 最浅, 0.3-0.6%, 0.6-1.0%, 1.0-1.5%, >1.5%/天 最深
+        markArea: (uptrendPhases.length > 0 || mergedSurgeEvents.length > 0) ? {
+          silent: true,
+          data: uptrendPhases.length > 0
+            // 有上涨阶段时根据斜率显示深浅不同的红色
+            ? uptrendPhases.slice(0, 10).map(p => {
+              // 根据日均斜率计算颜色层级（5级）- 上涨越快颜色越深
+              const slope = Math.abs(p.slope_second);
+              let opacity: number;
+              if (slope >= 1.5) opacity = 0.50;       // 层级5：最深（极速上涨）
+              else if (slope >= 1.0) opacity = 0.40; // 层级4：快速上涨
+              else if (slope >= 0.6) opacity = 0.30; // 层级3：中速上涨
+              else if (slope >= 0.3) opacity = 0.20; // 层级2：慢速上涨
+              else opacity = 0.12;                    // 层级1：最浅（缓慢上涨）
+
+              return [
+                { xAxis: p.start_date, itemStyle: { color: `rgba(239, 68, 68, ${opacity})` } },
+                { xAxis: p.end_date }
+              ];
+            })
+            // 无上涨阶段时用急涨事件斜率
+            : mergedSurgeEvents.slice(0, 10).map(e => {
+              const slope = Math.abs(e.slope_second);
+              let opacity: number;
+              if (slope >= 1.5) opacity = 0.50;
+              else if (slope >= 1.0) opacity = 0.40;
+              else if (slope >= 0.6) opacity = 0.30;
+              else if (slope >= 0.3) opacity = 0.20;
+              else opacity = 0.12;
+
+              return [
+                { xAxis: e.start_date, itemStyle: { color: `rgba(239, 68, 68, ${opacity})` } },
+                { xAxis: e.end_date }
+              ];
+            })
+        } : undefined,
+        // 斜率标注 - 优先显示上涨阶段信息
+        markPoint: (uptrendPhases.length > 0 || mergedSurgeEvents.length > 0) ? {
+          symbol: 'pin',
+          symbolSize: 35,
+          symbolOffset: [0, -10],  // 向下偏移，防止被顶部遮挡
+          data: uptrendPhases.length > 0
+            // 显示上涨阶段斜率（红色）
+            ? uptrendPhases.slice(0, 10).map(p => {
+              const slopeLabel = p.is_accelerating
+                ? `🚀 ${p.slope_second.toFixed(2)}%/天`
+                : `${p.slope_second.toFixed(2)}%/天`;
+              return {
+                name: slopeLabel,
+                xAxis: p.end_date,
+                yAxis: 'max',
+                value: slopeLabel,
+                itemStyle: { color: p.is_accelerating ? '#dc2626' : '#ef4444' },
+                label: {
+                  show: true,
+                  formatter: slopeLabel,
+                  fontSize: 10,
+                  color: '#fff',
+                  backgroundColor: p.is_accelerating ? '#dc2626' : '#ef4444',
+                  padding: [2, 4],
+                  borderRadius: 2,
+                  offset: [0, 5],  // 标签偏移
+                },
+              };
+            })
+            // 显示急涨事件斜率 - 所有合并后的事件都显示
+            : mergedSurgeEvents.slice(0, 10).map(e => {
+              const isAccelerating = e.is_accelerating === 1;
+              const slopeLabel = isAccelerating
+                ? `🚀 ${e.slope_second.toFixed(2)}%/天`
+                : `${e.slope_second.toFixed(2)}%/天`;
+              return {
+                name: slopeLabel,
+                xAxis: e.end_date,
+                yAxis: 'max',
+                value: slopeLabel,
+                itemStyle: { color: isAccelerating ? '#ef4444' : '#f97316' },
+                label: {
+                  show: true,
+                  formatter: slopeLabel,
+                  fontSize: 10,
+                  color: '#fff',
+                  backgroundColor: isAccelerating ? '#ef4444' : '#f97316',
+                  padding: [2, 4],
+                  borderRadius: 2,
+                },
+              };
+            }),
+        } : undefined,
       },
       {
         name: indexName,

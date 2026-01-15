@@ -24,45 +24,58 @@ class DataFetcher:
     def fetch_fund_info(self, code: str) -> Optional[Dict]:
         """
         获取基金基本信息
-
+        
         Args:
             code: 基金代码
-
+            
         Returns:
             基金信息字典，失败返回None
         """
         try:
-            # 使用fund_name_em获取基金名称列表
-            fund_names = ak.fund_name_em()
-
-            # 查找对应基金
-            fund = fund_names[fund_names['基金代码'] == code]
-
-            if fund.empty:
-                print(f"Fund {code} not found in AKShare database")
+            # 使用 akshare 获取基金基本信息
+            df = ak.fund_open_fund_info_em(symbol=code, indicator="单位净值走势")
+            if df is None or len(df) == 0:
+                # 尝试用另一个接口获取名称（如果之前那个不行）
+                try:
+                    all_funds = ak.fund_name_em()
+                    fund_row = all_funds[all_funds['基金代码'] == code]
+                    if not fund_row.empty:
+                        return {
+                            "code": code,
+                            "name": fund_row.iloc[0]['基金简称'],
+                            "type": fund_row.iloc[0]['基金类型']
+                        }
+                except:
+                    pass
                 return None
-
-            # 提取基金名称
-            name = fund.iloc[0]['基金简称']
-
-            # 保存到数据库
-            upsert_instrument(
-                code=code,
-                name=name,
-                instrument_type="fund",
-                source=self.source
-            )
-
+            
+            # 这里API其实只返回净值，不返回名称，需要用 fund_name_em 获取名称
+            # 为了效率，我们先尝试直接从全量列表中查
+            try:
+                all_funds = ak.fund_name_em()
+                fund_row = all_funds[all_funds['基金代码'] == code]
+                if not fund_row.empty:
+                    return {
+                        "code": code,
+                        "name": fund_row.iloc[0]['基金简称'],
+                        "type": fund_row.iloc[0]['基金类型']
+                    }
+            except:
+                pass
+                
             return {
                 "code": code,
-                "name": name,
+                "name": f"基金{code}",
                 "type": "fund"
             }
+            
         except Exception as e:
             print(f"Error fetching fund info for {code}: {e}")
-            import traceback
-            traceback.print_exc()
             return None
+
+    def get_fund_info(self, code: str) -> Optional[Dict]:
+        """get_fund_info 是 fetch_fund_info 的别名，用于兼容性"""
+        return self.fetch_fund_info(code)
 
     def fetch_fund_history(
         self,

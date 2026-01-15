@@ -1,0 +1,1467 @@
+{
+  "scan_time": "2026-01-15T15:06:10.079891",
+  "criteria": {
+    "duration": "5-10天",
+    "slope": "1.0-2.0%/天"
+  },
+  "funds": [
+    {
+      "code": "005903",
+      "name": "宏利绩优混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 10.56,
+      "slope_second": 1.968
+    },
+    {
+      "code": "011373",
+      "name": "招商前沿医疗保健股票A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 20.77,
+      "slope_second": 1.96
+    },
+    {
+      "code": "023394",
+      "name": "宝盈创新医疗混合发起式C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 13.66,
+      "slope_second": 1.958
+    },
+    {
+      "code": "023393",
+      "name": "宝盈创新医疗混合发起式A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 13.67,
+      "slope_second": 1.957
+    },
+    {
+      "code": "011374",
+      "name": "招商前沿医疗保健股票C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 20.75,
+      "slope_second": 1.955
+    },
+    {
+      "code": "519089",
+      "name": "新华优选成长混合",
+      "start_date": "2025-12-29",
+      "end_date": "2026-01-07",
+      "duration": 5,
+      "total_gain": 5.7,
+      "slope_second": 1.952
+    },
+    {
+      "code": "019410",
+      "name": "南方数字经济混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.99,
+      "slope_second": 1.938
+    },
+    {
+      "code": "019411",
+      "name": "南方数字经济混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.97,
+      "slope_second": 1.936
+    },
+    {
+      "code": "011111",
+      "name": "华泰柏瑞行业严选混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 8.32,
+      "slope_second": 1.935
+    },
+    {
+      "code": "011112",
+      "name": "华泰柏瑞行业严选混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 8.32,
+      "slope_second": 1.934
+    },
+    {
+      "code": "011155",
+      "name": "金鹰责任投资混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 21.14,
+      "slope_second": 1.926
+    },
+    {
+      "code": "011156",
+      "name": "金鹰责任投资混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 21.1,
+      "slope_second": 1.923
+    },
+    {
+      "code": "008528",
+      "name": "华泰柏瑞质量成长A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 10.97,
+      "slope_second": 1.922
+    },
+    {
+      "code": "006167",
+      "name": "德邦乐享生活混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 14.0,
+      "slope_second": 1.921
+    },
+    {
+      "code": "006168",
+      "name": "德邦乐享生活混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 13.99,
+      "slope_second": 1.92
+    },
+    {
+      "code": "011452",
+      "name": "华泰柏瑞质量成长C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 10.95,
+      "slope_second": 1.919
+    },
+    {
+      "code": "010201",
+      "name": "农银汇理智增一年定开混合",
+      "start_date": "2025-11-18",
+      "end_date": "2026-01-09",
+      "duration": 10,
+      "total_gain": 11.43,
+      "slope_second": 1.909
+    },
+    {
+      "code": "004725",
+      "name": "先锋聚元灵活配置混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-12",
+      "duration": 6,
+      "total_gain": 14.88,
+      "slope_second": 1.904
+    },
+    {
+      "code": "004724",
+      "name": "先锋聚元灵活配置混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-12",
+      "duration": 6,
+      "total_gain": 14.87,
+      "slope_second": 1.903
+    },
+    {
+      "code": "013886",
+      "name": "华商新能源汽车混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 13.19,
+      "slope_second": 1.897
+    },
+    {
+      "code": "013887",
+      "name": "华商新能源汽车混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 13.19,
+      "slope_second": 1.895
+    },
+    {
+      "code": "001156",
+      "name": "申万菱信新能源汽车主题灵活配置混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 14.78,
+      "slope_second": 1.891
+    },
+    {
+      "code": "022739",
+      "name": "申万菱信新能源汽车主题灵活配置混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 14.8,
+      "slope_second": 1.89
+    },
+    {
+      "code": "026332",
+      "name": "广发盛世精选混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-12",
+      "duration": 6,
+      "total_gain": 12.44,
+      "slope_second": 1.879
+    },
+    {
+      "code": "026333",
+      "name": "广发盛世精选混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-12",
+      "duration": 6,
+      "total_gain": 12.42,
+      "slope_second": 1.876
+    },
+    {
+      "code": "026078",
+      "name": "中航卓越领航混合发起A",
+      "start_date": "2025-12-25",
+      "end_date": "2026-01-12",
+      "duration": 10,
+      "total_gain": 14.91,
+      "slope_second": 1.869
+    },
+    {
+      "code": "026079",
+      "name": "中航卓越领航混合发起C",
+      "start_date": "2025-12-25",
+      "end_date": "2026-01-12",
+      "duration": 10,
+      "total_gain": 14.89,
+      "slope_second": 1.867
+    },
+    {
+      "code": "009415",
+      "name": "中邮瑞享两年定开混合A",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 14.34,
+      "slope_second": 1.857
+    },
+    {
+      "code": "004726",
+      "name": "先锋聚优A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-12",
+      "duration": 6,
+      "total_gain": 14.26,
+      "slope_second": 1.855
+    },
+    {
+      "code": "004727",
+      "name": "先锋聚优C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-12",
+      "duration": 6,
+      "total_gain": 14.25,
+      "slope_second": 1.855
+    },
+    {
+      "code": "009416",
+      "name": "中邮瑞享两年定开混合C",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 14.25,
+      "slope_second": 1.846
+    },
+    {
+      "code": "008382",
+      "name": "融通产业趋势股票",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 11.73,
+      "slope_second": 1.843
+    },
+    {
+      "code": "019360",
+      "name": "汇添富积极优选三年定开混合",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 14.56,
+      "slope_second": 1.842
+    },
+    {
+      "code": "006274",
+      "name": "圆信永丰医药健康A",
+      "start_date": "2025-12-30",
+      "end_date": "2026-01-14",
+      "duration": 9,
+      "total_gain": 16.57,
+      "slope_second": 1.839
+    },
+    {
+      "code": "023103",
+      "name": "圆信永丰医药健康C",
+      "start_date": "2025-12-30",
+      "end_date": "2026-01-14",
+      "duration": 9,
+      "total_gain": 16.57,
+      "slope_second": 1.839
+    },
+    {
+      "code": "001613",
+      "name": "长城久祥混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 7.91,
+      "slope_second": 1.801
+    },
+    {
+      "code": "017462",
+      "name": "长城久祥混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 7.9,
+      "slope_second": 1.8
+    },
+    {
+      "code": "217020",
+      "name": "招商安达灵活配置混合",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 10.3,
+      "slope_second": 1.793
+    },
+    {
+      "code": "001437",
+      "name": "易方达瑞享混合I",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 9.32,
+      "slope_second": 1.777
+    },
+    {
+      "code": "001438",
+      "name": "易方达瑞享混合E",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 9.31,
+      "slope_second": 1.776
+    },
+    {
+      "code": "005695",
+      "name": "华安睿明两年定开混合A",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 16.11,
+      "slope_second": 1.775
+    },
+    {
+      "code": "013145",
+      "name": "浙商汇金先进制造混合",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 7.05,
+      "slope_second": 1.771
+    },
+    {
+      "code": "005696",
+      "name": "华安睿明两年定开混合C",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 16.02,
+      "slope_second": 1.765
+    },
+    {
+      "code": "013469",
+      "name": "泰信低碳经济混合发起式A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.76,
+      "slope_second": 1.764
+    },
+    {
+      "code": "013470",
+      "name": "泰信低碳经济混合发起式C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.74,
+      "slope_second": 1.761
+    },
+    {
+      "code": "010115",
+      "name": "易方达远见成长混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 9.52,
+      "slope_second": 1.725
+    },
+    {
+      "code": "011412",
+      "name": "易方达远见成长混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 9.51,
+      "slope_second": 1.723
+    },
+    {
+      "code": "006642",
+      "name": "华泰保兴吉年利定开",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 11.79,
+      "slope_second": 1.72
+    },
+    {
+      "code": "011891",
+      "name": "易方达先锋成长混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 9.4,
+      "slope_second": 1.714
+    },
+    {
+      "code": "011892",
+      "name": "易方达先锋成长混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 9.39,
+      "slope_second": 1.712
+    },
+    {
+      "code": "018418",
+      "name": "广发碳中和主题混合发起式A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 11.77,
+      "slope_second": 1.71
+    },
+    {
+      "code": "018419",
+      "name": "广发碳中和主题混合发起式C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 11.76,
+      "slope_second": 1.709
+    },
+    {
+      "code": "025794",
+      "name": "中欧新能源主题混合发起A",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 6.28,
+      "slope_second": 1.697
+    },
+    {
+      "code": "024459",
+      "name": "华商致远回报混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.62,
+      "slope_second": 1.686
+    },
+    {
+      "code": "024460",
+      "name": "华商致远回报混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.61,
+      "slope_second": 1.684
+    },
+    {
+      "code": "025795",
+      "name": "中欧新能源主题混合发起C",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 6.2,
+      "slope_second": 1.684
+    },
+    {
+      "code": "006158",
+      "name": "博时荣享回报混合A",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 12.33,
+      "slope_second": 1.671
+    },
+    {
+      "code": "000390",
+      "name": "华商优势行业混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.27,
+      "slope_second": 1.668
+    },
+    {
+      "code": "025988",
+      "name": "鹏华创新未来混合(LOF)A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 7.61,
+      "slope_second": 1.667
+    },
+    {
+      "code": "501205",
+      "name": "鹏华创新未来混合(LOF)C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 7.62,
+      "slope_second": 1.665
+    },
+    {
+      "code": "006159",
+      "name": "博时荣享回报混合C",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 12.26,
+      "slope_second": 1.662
+    },
+    {
+      "code": "014765",
+      "name": "中欧碳中和混合发起A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 11.81,
+      "slope_second": 1.658
+    },
+    {
+      "code": "025348",
+      "name": "华商优势行业混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.16,
+      "slope_second": 1.658
+    },
+    {
+      "code": "014766",
+      "name": "中欧碳中和混合发起C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 11.77,
+      "slope_second": 1.654
+    },
+    {
+      "code": "022286",
+      "name": "长城医药产业精选混合发起式A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 11.84,
+      "slope_second": 1.643
+    },
+    {
+      "code": "022287",
+      "name": "长城医药产业精选混合发起式C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 11.81,
+      "slope_second": 1.642
+    },
+    {
+      "code": "025416",
+      "name": "新华优选分红混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 6.99,
+      "slope_second": 1.636
+    },
+    {
+      "code": "519087",
+      "name": "新华优选分红混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 6.99,
+      "slope_second": 1.635
+    },
+    {
+      "code": "010415",
+      "name": "华泰柏瑞质量精选混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 8.79,
+      "slope_second": 1.612
+    },
+    {
+      "code": "010416",
+      "name": "华泰柏瑞质量精选混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 8.78,
+      "slope_second": 1.61
+    },
+    {
+      "code": "004982",
+      "name": "新华安享多裕定开混合",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 19.77,
+      "slope_second": 1.605
+    },
+    {
+      "code": "022446",
+      "name": "前海开源周期精选混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.7,
+      "slope_second": 1.597
+    },
+    {
+      "code": "006719",
+      "name": "国融融盛龙头严选混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 7.58,
+      "slope_second": 1.593
+    },
+    {
+      "code": "006718",
+      "name": "国融融盛龙头严选混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 7.58,
+      "slope_second": 1.593
+    },
+    {
+      "code": "022447",
+      "name": "前海开源周期精选混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.69,
+      "slope_second": 1.593
+    },
+    {
+      "code": "015548",
+      "name": "华商核心成长一年持有混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.62,
+      "slope_second": 1.591
+    },
+    {
+      "code": "015547",
+      "name": "华商核心成长一年持有混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.63,
+      "slope_second": 1.589
+    },
+    {
+      "code": "001933",
+      "name": "华商新兴活力混合",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.15,
+      "slope_second": 1.585
+    },
+    {
+      "code": "011369",
+      "name": "华商均衡成长混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.28,
+      "slope_second": 1.583
+    },
+    {
+      "code": "011370",
+      "name": "华商均衡成长混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.27,
+      "slope_second": 1.579
+    },
+    {
+      "code": "013175",
+      "name": "海富通碳中和混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 12.12,
+      "slope_second": 1.573
+    },
+    {
+      "code": "013176",
+      "name": "海富通碳中和混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 12.1,
+      "slope_second": 1.572
+    },
+    {
+      "code": "024794",
+      "name": "鑫元医药睿选混合发起式A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 10.49,
+      "slope_second": 1.566
+    },
+    {
+      "code": "024795",
+      "name": "鑫元医药睿选混合发起式C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 10.47,
+      "slope_second": 1.564
+    },
+    {
+      "code": "014350",
+      "name": "华商卓越成长一年持有混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.61,
+      "slope_second": 1.56
+    },
+    {
+      "code": "014351",
+      "name": "华商卓越成长一年持有混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.59,
+      "slope_second": 1.556
+    },
+    {
+      "code": "025656",
+      "name": "国金智远量化选股混合A",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 7.13,
+      "slope_second": 1.555
+    },
+    {
+      "code": "025340",
+      "name": "鹏华制造升级混合A",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 8.09,
+      "slope_second": 1.554
+    },
+    {
+      "code": "168002",
+      "name": "国寿安保策略精选混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 12.13,
+      "slope_second": 1.55
+    },
+    {
+      "code": "022124",
+      "name": "国寿安保策略精选混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 12.11,
+      "slope_second": 1.548
+    },
+    {
+      "code": "025341",
+      "name": "鹏华制造升级混合C",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 8.0,
+      "slope_second": 1.544
+    },
+    {
+      "code": "025657",
+      "name": "国金智远量化选股混合C",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 7.05,
+      "slope_second": 1.543
+    },
+    {
+      "code": "023451",
+      "name": "中欧信息科技混合发起A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.1,
+      "slope_second": 1.539
+    },
+    {
+      "code": "023452",
+      "name": "中欧信息科技混合发起C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.08,
+      "slope_second": 1.536
+    },
+    {
+      "code": "519606",
+      "name": "国泰金鑫股票A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 7.8,
+      "slope_second": 1.534
+    },
+    {
+      "code": "015593",
+      "name": "国泰金鑫股票C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 7.78,
+      "slope_second": 1.532
+    },
+    {
+      "code": "017479",
+      "name": "广发医药精选股票A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 19.29,
+      "slope_second": 1.522
+    },
+    {
+      "code": "006449",
+      "name": "浙商汇金量化精选混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 7.8,
+      "slope_second": 1.521
+    },
+    {
+      "code": "017480",
+      "name": "广发医药精选股票C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 19.27,
+      "slope_second": 1.52
+    },
+    {
+      "code": "025704",
+      "name": "浙商汇金量化精选混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 7.79,
+      "slope_second": 1.519
+    },
+    {
+      "code": "009855",
+      "name": "中加新兴成长混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.07,
+      "slope_second": 1.51
+    },
+    {
+      "code": "009856",
+      "name": "中加新兴成长混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.06,
+      "slope_second": 1.509
+    },
+    {
+      "code": "020026",
+      "name": "国泰成长优选混合",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-24",
+      "duration": 6,
+      "total_gain": 7.6,
+      "slope_second": 1.506
+    },
+    {
+      "code": "019620",
+      "name": "汇安行业优选混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 11.75,
+      "slope_second": 1.49
+    },
+    {
+      "code": "019621",
+      "name": "汇安行业优选混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 11.72,
+      "slope_second": 1.49
+    },
+    {
+      "code": "240017",
+      "name": "华宝新兴产业混合",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 7.4,
+      "slope_second": 1.476
+    },
+    {
+      "code": "025968",
+      "name": "建信科技智选股票型发起A",
+      "start_date": "2025-12-02",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 10.03,
+      "slope_second": 1.475
+    },
+    {
+      "code": "025969",
+      "name": "建信科技智选股票型发起C",
+      "start_date": "2025-12-02",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 9.97,
+      "slope_second": 1.469
+    },
+    {
+      "code": "018052",
+      "name": "鹏扬医疗健康混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 11.4,
+      "slope_second": 1.463
+    },
+    {
+      "code": "026273",
+      "name": "平安数字经济精选混合发起式A",
+      "start_date": "2026-01-07",
+      "end_date": "2026-01-14",
+      "duration": 5,
+      "total_gain": 5.69,
+      "slope_second": 1.46
+    },
+    {
+      "code": "018053",
+      "name": "鹏扬医疗健康混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 11.37,
+      "slope_second": 1.458
+    },
+    {
+      "code": "026274",
+      "name": "平安数字经济精选混合发起式C",
+      "start_date": "2026-01-07",
+      "end_date": "2026-01-14",
+      "duration": 5,
+      "total_gain": 5.68,
+      "slope_second": 1.457
+    },
+    {
+      "code": "025758",
+      "name": "华安新兴动力混合发起式A",
+      "start_date": "2025-12-19",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 6.89,
+      "slope_second": 1.453
+    },
+    {
+      "code": "025759",
+      "name": "华安新兴动力混合发起式C",
+      "start_date": "2025-12-19",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 6.86,
+      "slope_second": 1.451
+    },
+    {
+      "code": "008107",
+      "name": "华商医药医疗行业股票",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 17.89,
+      "slope_second": 1.441
+    },
+    {
+      "code": "014114",
+      "name": "广发沪港深医药混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 18.27,
+      "slope_second": 1.436
+    },
+    {
+      "code": "014115",
+      "name": "广发沪港深医药混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 18.22,
+      "slope_second": 1.435
+    },
+    {
+      "code": "000354",
+      "name": "长盛城镇化主题混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.05,
+      "slope_second": 1.399
+    },
+    {
+      "code": "018933",
+      "name": "长盛城镇化主题混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.03,
+      "slope_second": 1.396
+    },
+    {
+      "code": "008576",
+      "name": "财通碳中和一年持有混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 11.95,
+      "slope_second": 1.38
+    },
+    {
+      "code": "008577",
+      "name": "财通碳中和一年持有混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 11.92,
+      "slope_second": 1.377
+    },
+    {
+      "code": "010654",
+      "name": "天弘医药创新A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 16.22,
+      "slope_second": 1.302
+    },
+    {
+      "code": "010655",
+      "name": "天弘医药创新C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 16.21,
+      "slope_second": 1.3
+    },
+    {
+      "code": "000970",
+      "name": "东方红睿元混合",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 11.46,
+      "slope_second": 1.276
+    },
+    {
+      "code": "008359",
+      "name": "华安医疗创新混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 16.11,
+      "slope_second": 1.274
+    },
+    {
+      "code": "013483",
+      "name": "华安医疗创新混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 16.08,
+      "slope_second": 1.27
+    },
+    {
+      "code": "026420",
+      "name": "大摩多因子策略混合C",
+      "start_date": "2025-12-29",
+      "end_date": "2026-01-12",
+      "duration": 8,
+      "total_gain": 8.6,
+      "slope_second": 1.27
+    },
+    {
+      "code": "014783",
+      "name": "招商远见成长混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.54,
+      "slope_second": 1.25
+    },
+    {
+      "code": "014784",
+      "name": "招商远见成长混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 8.52,
+      "slope_second": 1.247
+    },
+    {
+      "code": "019351",
+      "name": "招商远见回报3年定开混合",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 6.92,
+      "slope_second": 1.245
+    },
+    {
+      "code": "019773",
+      "name": "东方红智享三年持有混合A",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 7.57,
+      "slope_second": 1.242
+    },
+    {
+      "code": "019774",
+      "name": "东方红智享三年持有混合C",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 7.52,
+      "slope_second": 1.236
+    },
+    {
+      "code": "005589",
+      "name": "长信企业精选定开混合",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 9.09,
+      "slope_second": 1.235
+    },
+    {
+      "code": "519212",
+      "name": "万家宏观择时多策略混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 6.26,
+      "slope_second": 1.235
+    },
+    {
+      "code": "017787",
+      "name": "万家宏观择时多策略混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 6.24,
+      "slope_second": 1.234
+    },
+    {
+      "code": "014524",
+      "name": "汇添富制造业升级研究精选一年持有混合发起A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 9.52,
+      "slope_second": 1.231
+    },
+    {
+      "code": "014525",
+      "name": "汇添富制造业升级研究精选一年持有混合发起C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 9.5,
+      "slope_second": 1.228
+    },
+    {
+      "code": "025172",
+      "name": "德邦医疗创新混合发起式A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 13.86,
+      "slope_second": 1.178
+    },
+    {
+      "code": "025173",
+      "name": "德邦医疗创新混合发起式C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 13.85,
+      "slope_second": 1.177
+    },
+    {
+      "code": "019783",
+      "name": "华安健康主题混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 16.25,
+      "slope_second": 1.158
+    },
+    {
+      "code": "019784",
+      "name": "华安健康主题混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-14",
+      "duration": 8,
+      "total_gain": 16.22,
+      "slope_second": 1.154
+    },
+    {
+      "code": "020748",
+      "name": "国联智选先锋股票A",
+      "start_date": "2025-12-29",
+      "end_date": "2026-01-12",
+      "duration": 8,
+      "total_gain": 8.11,
+      "slope_second": 1.146
+    },
+    {
+      "code": "002085",
+      "name": "长盛互联网+混合A",
+      "start_date": "2025-12-30",
+      "end_date": "2026-01-14",
+      "duration": 9,
+      "total_gain": 8.39,
+      "slope_second": 1.145
+    },
+    {
+      "code": "020749",
+      "name": "国联智选先锋股票C",
+      "start_date": "2025-12-29",
+      "end_date": "2026-01-12",
+      "duration": 8,
+      "total_gain": 8.09,
+      "slope_second": 1.143
+    },
+    {
+      "code": "018934",
+      "name": "长盛互联网+混合C",
+      "start_date": "2025-12-30",
+      "end_date": "2026-01-14",
+      "duration": 9,
+      "total_gain": 8.37,
+      "slope_second": 1.141
+    },
+    {
+      "code": "019379",
+      "name": "南方前瞻共赢三年定开混合",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 10.15,
+      "slope_second": 1.127
+    },
+    {
+      "code": "014708",
+      "name": "天弘臻选健康混合A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 14.32,
+      "slope_second": 1.123
+    },
+    {
+      "code": "014709",
+      "name": "天弘臻选健康混合C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-13",
+      "duration": 7,
+      "total_gain": 14.28,
+      "slope_second": 1.119
+    },
+    {
+      "code": "025956",
+      "name": "新华科技优选混合发起A",
+      "start_date": "2025-12-26",
+      "end_date": "2026-01-12",
+      "duration": 7,
+      "total_gain": 9.39,
+      "slope_second": 1.117
+    },
+    {
+      "code": "025421",
+      "name": "浦银安盛数字经济混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.28,
+      "slope_second": 1.116
+    },
+    {
+      "code": "025422",
+      "name": "浦银安盛数字经济混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-25",
+      "duration": 7,
+      "total_gain": 9.26,
+      "slope_second": 1.115
+    },
+    {
+      "code": "025957",
+      "name": "新华科技优选混合发起C",
+      "start_date": "2025-12-26",
+      "end_date": "2026-01-12",
+      "duration": 7,
+      "total_gain": 9.38,
+      "slope_second": 1.115
+    },
+    {
+      "code": "000717",
+      "name": "融通转型三动力灵活配置混合A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 10.14,
+      "slope_second": 1.089
+    },
+    {
+      "code": "009828",
+      "name": "融通转型三动力灵活配置混合C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 10.13,
+      "slope_second": 1.089
+    },
+    {
+      "code": "006111",
+      "name": "泰康弘实3月定开混合",
+      "start_date": "2025-11-21",
+      "end_date": "2026-01-09",
+      "duration": 7,
+      "total_gain": 10.16,
+      "slope_second": 1.061
+    },
+    {
+      "code": "005983",
+      "name": "摩根核心精选股票A",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 10.48,
+      "slope_second": 1.042
+    },
+    {
+      "code": "014937",
+      "name": "摩根核心精选股票C",
+      "start_date": "2025-12-16",
+      "end_date": "2025-12-26",
+      "duration": 8,
+      "total_gain": 10.46,
+      "slope_second": 1.04
+    },
+    {
+      "code": "001766",
+      "name": "摩根医疗健康股票A",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 7.27,
+      "slope_second": 1.034
+    },
+    {
+      "code": "014932",
+      "name": "摩根医疗健康股票C",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-09",
+      "duration": 5,
+      "total_gain": 7.26,
+      "slope_second": 1.033
+    },
+    {
+      "code": "004959",
+      "name": "圆信永丰优悦生活混合",
+      "start_date": "2025-12-31",
+      "end_date": "2026-01-12",
+      "duration": 6,
+      "total_gain": 6.89,
+      "slope_second": 1.018
+    },
+    {
+      "code": "021308",
+      "name": "鹏华创新医药混合A",
+      "start_date": "2025-12-30",
+      "end_date": "2026-01-13",
+      "duration": 8,
+      "total_gain": 12.04,
+      "slope_second": 1.002
+    },
+    {
+      "code": "021309",
+      "name": "鹏华创新医药混合C",
+      "start_date": "2025-12-30",
+      "end_date": "2026-01-13",
+      "duration": 8,
+      "total_gain": 12.01,
+      "slope_second": 1.001
+    }
+  ]
+}

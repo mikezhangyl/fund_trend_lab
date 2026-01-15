@@ -1,0 +1,11 @@
+[
+  {
+    "code": "012051",
+    "name": "申万菱信乐道三年持有期混合",
+    "start_date": "2025-12-16",
+    "end_date": "2026-01-14",
+    "duration": 19,
+    "total_gain": 56.59,
+    "slope_first": 0.369,
+    "slope_second": 5.24,
+    "is_accelerating": 

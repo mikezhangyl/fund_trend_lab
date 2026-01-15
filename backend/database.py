@@ -83,6 +83,24 @@ def init_database():
             )
         """)
 
+        # 5. surge_events 表 - 存储急涨事件
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS surge_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code TEXT NOT NULL,
+                start_date TEXT NOT NULL,
+                end_date TEXT NOT NULL,
+                window INTEGER NOT NULL,
+                total_gain REAL NOT NULL,
+                slope_first REAL,
+                slope_second REAL,
+                is_accelerating INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(code, start_date, end_date),
+                FOREIGN KEY (code) REFERENCES instrument(code) ON DELETE CASCADE
+            )
+        """)
+
         print(f"Database initialized at: {DB_PATH}")
 
 
@@ -228,34 +246,64 @@ def load_user_state(key: str) -> Optional[str]:
 def delete_instrument(code: str) -> Dict:
     """
     删除基金/指数及其所有关联数据
-    
+
+    注意：依赖外键约束 ON DELETE CASCADE 自动删除关联数据
+
     Args:
         code: 基金/指数代码
-        
+
     Returns:
         删除结果统计
     """
     with get_db() as conn:
         cursor = conn.cursor()
-        
-        # 1. 删除时间序列数据
-        cursor.execute("DELETE FROM timeseries_daily WHERE code = ?", (code,))
-        timeseries_deleted = cursor.rowcount
-        
-        # 2. 删除同步状态
-        cursor.execute("DELETE FROM sync_state WHERE code = ?", (code,))
-        sync_deleted = cursor.rowcount
-        
-        # 3. 删除基金/指数基本信息
+
+        # 删除主表记录，外键约束会自动级联删除关联数据
         cursor.execute("DELETE FROM instrument WHERE code = ?", (code,))
         instrument_deleted = cursor.rowcount
-        
+
         return {
             "code": code,
             "instrument_deleted": instrument_deleted,
-            "timeseries_deleted": timeseries_deleted,
-            "sync_state_deleted": sync_deleted
+            "message": "关联数据通过外键约束自动删除"
         }
+
+
+def save_surge_event(
+    code: str,
+    start_date: str,
+    end_date: str,
+    window: int,
+    total_gain: float,
+    slope_first: float = 0,
+    slope_second: float = 0,
+    is_accelerating: bool = False
+) -> None:
+    """保存急涨事件"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT OR REPLACE INTO surge_events 
+            (code, start_date, end_date, window, total_gain, slope_first, slope_second, is_accelerating)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (code, start_date, end_date, window, total_gain, slope_first, slope_second, 1 if is_accelerating else 0))
+
+
+def get_surge_events(code: str) -> List[Dict]:
+    """获取某只基金的急涨事件"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT * FROM surge_events WHERE code = ? ORDER BY start_date DESC
+        """, (code,))
+        return [dict(row) for row in cursor.fetchall()]
+
+
+def clear_surge_events() -> None:
+    """清空所有急涨事件"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM surge_events")
 
 
 if __name__ == "__main__":

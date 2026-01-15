@@ -1,7 +1,11 @@
 """
 FastAPI后端主应用
 提供基金数据查询、同步、状态管理API
-遵循PRD v1.1：UI仅读取本地数据库，后台异步同步
+
+架构原则：
+1. UI仅读取本地数据库（Single Source of Truth）
+2. 后台异步同步外部数据（AKShare）
+3. 所有查询操作快速返回，不调用外部API
 """
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,11 +23,13 @@ from database import (
     delete_instrument,
     save_user_state,
     load_user_state,
-    get_sync_state
+    get_sync_state,
+    get_surge_events
 )
 from services.data_fetcher import DataFetcher
 from services.sync_service import sync_service
 from services.indicators import indicator_service
+from services.backtester import UptrendPhaseDetector
 
 
 app = FastAPI(
@@ -82,6 +88,19 @@ class UserState(BaseModel):
     value: str
 
 
+class BatchFundRequest(BaseModel):
+    """批量添加基金请求"""
+    codes: List[str]
+    set_favorite: bool = False
+    sync_data: bool = True
+
+
+class FavoritesRequest(BaseModel):
+    """收藏设置请求"""
+    codes: List[str]
+    mode: str = "replace"  # "replace" 替换, "add" 追加, "remove" 移除
+
+
 # ==================== 基金/指数管理 ====================
 
 @app.get("/api/instruments")
@@ -119,18 +138,18 @@ async def get_instrument_detail(code: str) -> Instrument:
 
     Returns:
         基金/指数信息
+
+    Raises:
+        404: 基金/指数不存在
     """
     try:
         info = get_instrument_info(code)
 
-        # 如果数据库中不存在，尝试从AKShare获取
         if not info:
-            print(f"Instrument {code} not found in database, fetching from AKShare...")
-            fetcher = DataFetcher()
-            info = fetcher.fetch_fund_info(code)
-
-            if not info:
-                raise HTTPException(status_code=404, detail=f"Instrument {code} not found")
+            raise HTTPException(
+                status_code=404,
+                detail=f"Instrument {code} not found. Please add it first via /api/funds/batch"
+            )
 
         return Instrument(
             code=info["code"],
@@ -162,6 +181,72 @@ async def get_indicators(code: str, days: int = 20) -> Dict:
     try:
         result = indicator_service.calculate_indicators(code, days)
         return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/surge_events/{code}")
+async def get_surge_events_api(code: str) -> List[Dict]:
+    """
+    获取某只基金的急涨事件
+    
+    用于在图表上标注急涨区间
+    """
+    try:
+        events = get_surge_events(code)
+        return events
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/uptrend_phases/{code}")
+async def get_uptrend_phases(
+    code: str,
+    max_drawdown: float = 5.0,
+    min_gain: float = 10.0,
+    min_duration: int = 5
+) -> List[Dict]:
+    """
+    获取基金的连续上涨阶段
+    
+    新算法：捕捉连续上涨阶段，允许期间有小幅回撤
+    - 期间回撤超过阈值则认为是新的上涨阶段
+    
+    Args:
+        code: 基金代码
+        max_drawdown: 最大允许回撤% (默认5%)
+        min_gain: 最小涨幅% (默认10%)
+        min_duration: 最少持续天数 (默认5天)
+    
+    Returns:
+        上涨阶段列表
+    """
+    try:
+        info = get_instrument_info(code)
+        name = info["name"] if info else ""
+        
+        detector = UptrendPhaseDetector(
+            max_drawdown_tolerance=max_drawdown,
+            min_gain=min_gain,
+            min_duration=min_duration
+        )
+        
+        phases = detector.detect_phases(code, name)
+        
+        return [
+            {
+                "start_date": p.start_date,
+                "end_date": p.end_date,
+                "duration_days": p.duration_days,
+                "total_gain": p.total_gain,
+                "max_drawdown": p.max_drawdown,
+                "avg_daily_gain": p.avg_daily_gain,
+                "slope_first": p.slope_first,
+                "slope_second": p.slope_second,
+                "is_accelerating": p.is_accelerating,
+            }
+            for p in phases
+        ]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -211,6 +296,9 @@ async def remove_instrument(code: str) -> Dict:
 
         # 执行删除
         result = delete_instrument(code)
+
+        if result["instrument_deleted"] == 0:
+            raise HTTPException(status_code=404, detail=f"Instrument {code} not found")
 
         return {
             "success": True,
@@ -405,6 +493,144 @@ async def load_state(key: str) -> Dict:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== 批量基金管理 ====================
+
+@app.post("/api/funds/batch")
+async def batch_add_funds(
+    request: BatchFundRequest,
+    background_tasks: BackgroundTasks
+) -> Dict:
+    """
+    批量添加基金到数据库
+    
+    Args:
+        request: 包含基金代码列表和选项的请求体
+        
+    Returns:
+        添加结果统计
+    """
+    import json
+    
+    results = []
+    errors = []
+    added_count = 0
+    synced_count = 0
+    
+    fetcher = DataFetcher()
+    
+    for code in request.codes:
+        try:
+            # 获取基金信息
+            info = fetcher.get_fund_info(code)
+
+            # 如果无法获取基金信息，记录错误并跳过
+            if not info:
+                errors.append({
+                    "code": code,
+                    "error": "无法获取基金信息，请确认基金代码正确"
+                })
+                continue
+
+            name = info.get('name', f'基金{code}')
+            fund_type = 'fund'
+
+            # 添加到数据库
+            upsert_instrument(code, name, fund_type, source='akshare')
+            added_count += 1
+            results.append({
+                "code": code,
+                "name": name,
+                "status": "added"
+            })
+
+            # 异步同步数据
+            if request.sync_data:
+                background_tasks.add_task(sync_service.sync_single, code)
+                synced_count += 1
+
+        except Exception as e:
+            errors.append({
+                "code": code,
+                "error": str(e)
+            })
+    
+    # 处理收藏
+    favorites_updated = 0
+    if request.set_favorite:
+        existing = load_user_state("favorites")
+        existing_list = json.loads(existing) if existing else []
+        new_favorites = list(set(existing_list + request.codes))
+        save_user_state("favorites", json.dumps(new_favorites))
+        favorites_updated = len(request.codes)
+    
+    return {
+        "success": len(errors) == 0,
+        "added": added_count,
+        "synced": synced_count,
+        "favorites_updated": favorites_updated,
+        "results": results,
+        "errors": errors
+    }
+
+
+# ==================== 收藏管理 ====================
+
+@app.get("/api/favorites")
+async def get_favorites() -> Dict:
+    """
+    获取收藏的基金列表
+    
+    Returns:
+        收藏的基金代码列表
+    """
+    import json
+    
+    favorites_str = load_user_state("favorites")
+    favorites = json.loads(favorites_str) if favorites_str else []
+    
+    return {
+        "count": len(favorites),
+        "codes": favorites
+    }
+
+
+@app.post("/api/favorites")
+async def set_favorites(request: FavoritesRequest) -> Dict:
+    """
+    设置/更新收藏列表
+    
+    Args:
+        request: 收藏设置请求
+            - codes: 基金代码列表
+            - mode: "replace" 替换, "add" 追加, "remove" 移除
+            
+    Returns:
+        更新后的收藏列表
+    """
+    import json
+    
+    existing_str = load_user_state("favorites")
+    existing = json.loads(existing_str) if existing_str else []
+    
+    if request.mode == "replace":
+        new_favorites = request.codes
+    elif request.mode == "add":
+        new_favorites = list(set(existing + request.codes))
+    elif request.mode == "remove":
+        new_favorites = [c for c in existing if c not in request.codes]
+    else:
+        raise HTTPException(status_code=400, detail=f"Invalid mode: {request.mode}")
+    
+    save_user_state("favorites", json.dumps(new_favorites))
+    
+    return {
+        "success": True,
+        "count": len(new_favorites),
+        "codes": new_favorites,
+        "mode": request.mode
+    }
 
 
 # ==================== 健康检查 ====================
