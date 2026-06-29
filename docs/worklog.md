@@ -1,8 +1,8 @@
 # 工作日志 | Worklog
 
 > 项目: fund_trend_lab - 急涨趋势检测系统
-> 对话ID: cb338e65-a746-45c5-a0a1-01a852a15459
-> 最后更新: 2026-01-15 10:55 ✅ 任务已完成
+> 对话ID: 673bbb64-f522-44ad-84b4-40b42f13d4dc
+> 最后更新: 2026-01-22 00:30 ✅ 刷新功能已实现
 
 ---
 
@@ -15,6 +15,31 @@
 ---
 
 ## ✅ 已完成工作
+
+### 2026-01-22
+
+#### 7. 基金数据刷新功能 (已完成)
+- **问题**: 已加载的基金净值数据没有刷新功能
+- **解决方案**: 在界面添加刷新按钮，点击后获取所有基金的最新数据
+- **实现细节**:
+  - 修改了 `frontend/src/hooks/useAppState.tsx`:
+    - 添加 `refreshAll` mutation 使用 React Query
+    - 触发 `/api/sync` 批量同步所有基金
+    - 成功后自动失效所有相关缓存（chartData, indicators, surgeEvents, uptrendPhases）
+    - 导出 `refreshAll()` 函数和 `isRefreshing` 状态
+  - 修改了 `frontend/src/App.tsx`:
+    - 在顶部 Header 添加绿色"刷新数据"按钮（带 🔄 图标）
+    - 添加 `handleRefreshAll` 处理函数
+    - 实现加载状态：刷新时按钮变灰，显示"刷新中..."
+    - 添加 CSS keyframe 动画：刷新时图标旋转
+    - 无基金时按钮禁用并半透明显示
+  - **特性**:
+    - ✅ 可视化加载状态（旋转动画 + 文字变化）
+    - ✅ 批量刷新所有已加载基金
+    - ✅ 错误处理和成功提示
+    - ✅ 防止重复点击（刷新时禁用按钮）
+    - ✅ React Query 自动缓存失效和数据重新获取
+- **技术栈**: React Query useMutation, Cache Invalidation, CSS Animations
 
 ### 2026-01-15
 
@@ -83,12 +108,12 @@ def calculate_segment_slopes(prices):
     n = len(prices)
     mid = n // 2
     y = (prices / prices[0] - 1) * 100  # 归一化为涨幅%
-    
+
     # 前半段斜率
     slope1 = linregress(range(mid), y[:mid])
     # 后半段斜率
     slope2 = linregress(range(n-mid), y[mid:] - y[mid])
-    
+
     # 加速度
     acceleration = slope2 / slope1
     return slope1, slope2, acceleration

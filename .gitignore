@@ -27,6 +27,8 @@ env/
 # 数据库
 data/*.db
 data/*.db-journal
+backend/*.db
+backend/*.db-journal
 
 # Node
 node_modules/
@@ -43,6 +45,7 @@ dist-ssr/
 *.swp
 *.swo
 *~
+*.bak
 .DS_Store
 
 # 环境变量

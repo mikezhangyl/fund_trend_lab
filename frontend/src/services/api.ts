@@ -23,7 +23,8 @@ const api = axios.create({
  * 批量添加基金请求参数
  */
 export interface BatchAddFundsRequest {
-  codes: string[];
+  codes?: string[]; // Deprecated
+  funds?: Array<{ code: string; name?: string }>;
   set_favorite?: boolean;
   sync_data?: boolean;
 }
@@ -50,22 +51,30 @@ export interface BatchAddFundsResponse {
 /**
  * 批量添加基金
  *
- * @param codes 基金代码数组
+ * @param items 基金代码数组 或  {code, name} 对象数组
  * @param setFavorite 是否设为收藏（默认false）
  * @param syncData 是否同步数据（默认true）
  */
 export async function batchAddFunds(
-  codes: string[],
+  items: string[] | Array<{ code: string; name: string }>,
   setFavorite: boolean = false,
   syncData: boolean = true
 ): Promise<BatchAddFundsResponse> {
-  const response = await api.post<BatchAddFundsResponse>('/funds/batch', {
-    codes,
+  const requestBody: BatchAddFundsRequest = {
     set_favorite: setFavorite,
     sync_data: syncData
-  });
+  };
+
+  if (items.length > 0 && typeof items[0] === 'string') {
+    requestBody.codes = items as string[];
+  } else {
+    requestBody.funds = items as Array<{ code: string; name: string }>;
+  }
+
+  const response = await api.post<BatchAddFundsResponse>('/funds/batch', requestBody);
   return response.data;
 }
+
 
 /**
  * 获取所有基金/指数列表
@@ -199,6 +208,30 @@ export async function getUptrendPhases(
       min_gain: minGain,
       min_duration: minDuration,
     }
+  });
+  return response.data;
+}
+
+// ==================== 波动率压缩比 ====================
+
+export interface VolatilityRatioPoint {
+  date: string;
+  vol_ratio: number;
+  recent_vol: number;
+  prev_vol: number;
+}
+
+/**
+ * 获取基金的滚动波动率压缩比
+ * 10天滚动窗口计算，显示"蓄势"形成过程
+ */
+export async function getVolatilityRatio(
+  code: string,
+  window: number = 10,
+  days?: number
+): Promise<VolatilityRatioPoint[]> {
+  const response = await api.get<VolatilityRatioPoint[]>(`/volatility_ratio/${code}`, {
+    params: { window, days }
   });
   return response.data;
 }
@@ -362,6 +395,77 @@ export async function loadUIState(): Promise<UIState | null> {
   } catch {
     return null;
   }
+}
+
+// ==================== 市场扫描 ====================
+
+export interface MarketScanFund {
+  code: string;
+  name: string;
+  months: number;
+  total_growth: number;
+  avg_monthly_growth: number;
+  current_value: number;
+  start_value: number;
+  start_date: string;
+  end_date: string;
+}
+
+export interface MarketScanResults {
+  results: MarketScanFund[];
+  count: number;
+  params: {
+    months: number;
+    min_growth: number;
+    started_at?: string;
+    completed_at?: string;
+  };
+}
+
+export interface MarketScanStatus {
+  is_scanning: boolean;
+  progress: number;
+  total: number;
+  percentage: number;
+  params: Record<string, any>;
+  logs?: string[]; // 新增日志字段
+}
+
+/**
+ * 启动全市场基金扫描
+ */
+export async function startMarketScan(
+  months: number,
+  minGrowth: number
+): Promise<{ status: string; message: string }> {
+  const response = await api.post('/market/scan', null, {
+    params: { months, min_growth: minGrowth }
+  });
+  return response.data;
+}
+
+/**
+ * 获取市场扫描进度
+ */
+export async function getMarketScanStatus(): Promise<MarketScanStatus> {
+  const response = await api.get<MarketScanStatus>('/market/scan/status');
+  return response.data;
+}
+
+/**
+ * 获取市场扫描结果
+ */
+export async function getMarketScanResults(): Promise<MarketScanResults> {
+  const response = await api.get<MarketScanResults>('/market/scan/results');
+  return response.data;
+}
+
+/**
+ * 清除市场扫描结果
+ */
+export async function clearMarketScanResults(): Promise<{ success: boolean }> {
+  const response = await api.delete('/market/scan/results');
+  return response.data;
 }
 
 // ==================== 健康检查 ====================

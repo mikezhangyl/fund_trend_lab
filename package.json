@@ -4,7 +4,7 @@
   "description": "**v1.1** - 基金多时间区间趋势可视化工具",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cd frontend && npm run build"
   },
   "keywords": [],
   "author": "",

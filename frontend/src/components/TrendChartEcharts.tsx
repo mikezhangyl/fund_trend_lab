@@ -6,7 +6,7 @@ import { useRef, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import * as echarts from 'echarts';
 import type { TimeseriesPoint } from '../types';
-import type { SurgeEvent } from '../services/api';
+import type { SurgeEvent, VolatilityRatioPoint } from '../services/api';
 
 /**
  * 填充缺失日期（周末、节假日）
@@ -72,6 +72,7 @@ interface TrendChartEchartsProps {
     is_accelerating: boolean;
     slope_second: number;
   }>;
+  volRatioData?: VolatilityRatioPoint[];
 }
 
 export function TrendChartEcharts({
@@ -84,8 +85,16 @@ export function TrendChartEcharts({
   height = 200,
   surgeEvents = [],
   uptrendPhases = [],
+  volRatioData = [],
 }: TrendChartEchartsProps) {
   const chartRef = useRef<ReactECharts>(null);
+
+  // 创建日期到vol_ratio的映射
+  const volRatioByDate = useMemo(() => {
+    const map = new Map<string, number>();
+    volRatioData?.forEach(d => map.set(d.date, d.vol_ratio));
+    return map;
+  }, [volRatioData]);
 
   // 获取日期范围
   const allDates = useMemo((): { start: string; end: string } | null => {
@@ -283,6 +292,10 @@ export function TrendChartEcharts({
       formatter: (params: any) => {
         if (!params || params.length === 0) return '';
         const date = params[0].axisValue;
+
+        // 获取该日期的vol_ratio
+        const volRatio = volRatioByDate.get(date);
+
         let tooltip = `<div style="font-weight:bold;margin-bottom:4px;">${date}</div>`;
         params.forEach((param: any) => {
           const value = param.value;
@@ -291,6 +304,16 @@ export function TrendChartEcharts({
             tooltip += `<div>${param.marker} ${param.seriesName}: <span style="color:${color}">${value >= 0 ? '+' : ''}${value.toFixed(2)}%</span></div>`;
           }
         });
+
+        // 添加波动率压缩比信息
+        if (volRatio != null) {
+          const icon = volRatio < 0.6 ? '🟣' : volRatio < 0.8 ? '🟪' : '⚪';
+          const color = volRatio < 0.6 ? '#9333ea' : volRatio < 0.8 ? '#c084fc' : '#9ca3af';
+          tooltip += `<div style="margin-top:4px;padding-top:4px;border-top:1px solid #e5e7eb;">`;
+          tooltip += `波动率比: <span style="color:${color};font-weight:bold;">${volRatio.toFixed(2)}</span> ${icon}`;
+          tooltip += `</div>`;
+        }
+
         return tooltip;
       },
     },

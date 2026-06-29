@@ -30,6 +30,7 @@ from services.data_fetcher import DataFetcher
 from services.sync_service import sync_service
 from services.indicators import indicator_service
 from services.backtester import UptrendPhaseDetector
+from services.market_scanner import market_scanner
 
 
 app = FastAPI(
@@ -88,9 +89,14 @@ class UserState(BaseModel):
     value: str
 
 
+class FundItem(BaseModel):
+    code: str
+    name: Optional[str] = None
+
 class BatchFundRequest(BaseModel):
     """批量添加基金请求"""
-    codes: List[str]
+    codes: Optional[List[str]] = None # Deprecated, use funds
+    funds: Optional[List[FundItem]] = None
     set_favorite: bool = False
     sync_data: bool = True
 
@@ -166,14 +172,14 @@ async def get_instrument_detail(code: str) -> Instrument:
 async def get_indicators(code: str, days: int = 20) -> Dict:
     """
     获取基金技术指标
-    
+
     用于识别潜在急涨信号，包含：
     - momentum: 动量（涨跌幅%）
     - relative_strength: 相对强度（vs沪深300）
     - volatility: 波动率
     - vol_ratio: 波动率压缩比
     - warning_level: 预警等级 (HIGH/MEDIUM/LOW)
-    
+
     Args:
         code: 基金代码
         days: 计算周期天数（默认20）
@@ -189,7 +195,7 @@ async def get_indicators(code: str, days: int = 20) -> Dict:
 async def get_surge_events_api(code: str) -> List[Dict]:
     """
     获取某只基金的急涨事件
-    
+
     用于在图表上标注急涨区间
     """
     try:
@@ -208,31 +214,31 @@ async def get_uptrend_phases(
 ) -> List[Dict]:
     """
     获取基金的连续上涨阶段
-    
+
     新算法：捕捉连续上涨阶段，允许期间有小幅回撤
     - 期间回撤超过阈值则认为是新的上涨阶段
-    
+
     Args:
         code: 基金代码
         max_drawdown: 最大允许回撤% (默认5%)
         min_gain: 最小涨幅% (默认10%)
         min_duration: 最少持续天数 (默认5天)
-    
+
     Returns:
         上涨阶段列表
     """
     try:
         info = get_instrument_info(code)
         name = info["name"] if info else ""
-        
+
         detector = UptrendPhaseDetector(
             max_drawdown_tolerance=max_drawdown,
             min_gain=min_gain,
             min_duration=min_duration
         )
-        
+
         phases = detector.detect_phases(code, name)
-        
+
         return [
             {
                 "start_date": p.start_date,
@@ -247,6 +253,189 @@ async def get_uptrend_phases(
             }
             for p in phases
         ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/volatility_ratio/{code}")
+async def get_volatility_ratio(
+    code: str,
+    window: int = 5,
+    days: Optional[int] = None
+) -> List[Dict]:
+    """
+    获取基金的滚动波动率压缩比
+
+    使用滑动窗口计算历史上每个时间点的波动率压缩比，
+    可以看到"蓄势"的形成过程
+
+    Args:
+        code: 基金代码
+        window: 滚动窗口大小（默认5天）
+        days: 返回最近多少天的数据（None表示全部）
+
+    Returns:
+        波动率比率时间序列 [{"date": "2024-01-15", "vol_ratio": 0.75, ...}, ...]
+    """
+    try:
+        results = indicator_service.calculate_rolling_volatility_ratio(
+            fund_code=code,
+            window=window,
+            max_days=days
+        )
+
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/funds/rapid_growth")
+async def get_rapid_growth_funds(
+    months: int = 3,
+    min_growth: float = 20.0
+) -> Dict:
+    """
+    获取快速爬升的基金列表
+
+    筛选出在指定时间窗口内平均月增长率达到阈值的基金
+
+    Args:
+        months: 时间窗口（月数），默认3个月
+        min_growth: 最小平均月增长率（%），默认20%
+
+    Returns:
+        符合条件的基金列表及统计信息
+    """
+    try:
+        # 获取所有基金
+        all_instruments = list_instruments(instrument_type='fund')
+
+        matching_funds = [ ]
+
+        # 遍历所有基金计算增长率
+        for inst in all_instruments:
+            code = inst['code']
+            name = inst['name']
+
+            # 计算月增长率
+            growth_data = indicator_service.calculate_monthly_growth_rate(code, months)
+
+            # 如果数据不足或计算失败，跳过
+            if not growth_data:
+                continue
+
+            # 筛选符合条件的基金
+            if growth_data['avg_monthly_growth'] >= min_growth:
+                matching_funds.append({
+                    'code': code,
+                    'name': name,
+                    'months': months,
+                    'total_growth': growth_data['total_growth'],
+                    'avg_monthly_growth': growth_data['avg_monthly_growth'],
+                    'current_value': growth_data['current_value'],
+                    'start_value': growth_data['start_value']
+                })
+
+        # 按平均月增长率降序排序
+        matching_funds.sort(key=lambda x: x['avg_monthly_growth'], reverse=True)
+
+        return {
+            'funds': matching_funds,
+            'count': len(matching_funds),
+            'criteria': {
+                'months': months,
+                'min_growth': min_growth
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== 市场扫描 ====================
+
+@app.post("/api/market/scan")
+async def start_market_scan(
+    background_tasks: BackgroundTasks,
+    months: int = 3,
+    min_growth: float = 20.0
+) -> Dict:
+    """
+    启动全市场基金扫描
+
+    扫描所有公募基金（股票型、混合型、指数型），找出符合增长条件的基金
+
+    Args:
+        months: 时间窗口（月数），默认3个月
+        min_growth: 最小平均月增长率（%），默认20%
+
+    Returns:
+        扫描任务状态
+    """
+    try:
+        if market_scanner.is_scanning:
+            raise HTTPException(status_code=400, detail="扫描正在进行中，请等待当前扫描完成")
+
+        # 启动后台扫描任务
+        background_tasks.add_task(market_scanner.scan_market, months, min_growth)
+
+        return {
+            "status": "started",
+            "message": f"市场扫描已启动（{months}月≥{min_growth}%）",
+            "params": {
+                "months": months,
+                "min_growth": min_growth
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/market/scan/status")
+async def get_market_scan_status() -> Dict:
+    """
+    获取市场扫描进度
+
+    Returns:
+        扫描状态和进度信息
+    """
+    try:
+        return market_scanner.get_status()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/market/scan/results")
+async def get_market_scan_results() -> Dict:
+    """
+    获取市场扫描结果
+
+    Returns:
+        符合条件的基金列表
+    """
+    try:
+        return market_scanner.get_results()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/api/market/scan/results")
+async def clear_market_scan_results() -> Dict:
+    """
+    清除市场扫描结果
+
+    Returns:
+        操作结果
+    """
+    try:
+        if market_scanner.is_scanning:
+            raise HTTPException(status_code=400, detail="扫描正在进行中，无法清除结果")
+
+        market_scanner.clear_results()
+        return {"success": True, "message": "扫描结果已清除"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -504,36 +693,50 @@ async def batch_add_funds(
 ) -> Dict:
     """
     批量添加基金到数据库
-    
+
     Args:
         request: 包含基金代码列表和选项的请求体
-        
+
     Returns:
         添加结果统计
     """
     import json
-    
+
     results = []
     errors = []
     added_count = 0
     synced_count = 0
-    
+
     fetcher = DataFetcher()
-    
-    for code in request.codes:
+
+    # Normalize input: convert legacy strings or new objects to uniform list
+    items_to_process = []
+    if request.funds:
+        items_to_process = request.funds
+    elif request.codes:
+        items_to_process = [FundItem(code=c) for c in request.codes]
+
+    codes_for_favorites = []
+
+    for item in items_to_process:
+        code = item.code
+        codes_for_favorites.append(code)
+
         try:
-            # 获取基金信息
-            info = fetcher.get_fund_info(code)
+            name = item.name
 
-            # 如果无法获取基金信息，记录错误并跳过
-            if not info:
-                errors.append({
-                    "code": code,
-                    "error": "无法获取基金信息，请确认基金代码正确"
-                })
-                continue
+            # Only fetch info if name is missing
+            if not name:
+                # 获取基金信息 (Blocking call, acceptable for single manual add but slow for batch)
+                info = fetcher.get_fund_info(code)
+                if not info:
+                    errors.append({
+                        "code": code,
+                        "error": "无法获取基金信息，请确认基金代码正确"
+                    })
+                    continue
+                name = info.get('name', f'基金{code}')
 
-            name = info.get('name', f'基金{code}')
             fund_type = 'fund'
 
             # 添加到数据库
@@ -555,16 +758,16 @@ async def batch_add_funds(
                 "code": code,
                 "error": str(e)
             })
-    
+
     # 处理收藏
     favorites_updated = 0
-    if request.set_favorite:
+    if request.set_favorite and codes_for_favorites:
         existing = load_user_state("favorites")
         existing_list = json.loads(existing) if existing else []
-        new_favorites = list(set(existing_list + request.codes))
+        new_favorites = list(set(existing_list + codes_for_favorites))
         save_user_state("favorites", json.dumps(new_favorites))
-        favorites_updated = len(request.codes)
-    
+        favorites_updated = len(codes_for_favorites)
+
     return {
         "success": len(errors) == 0,
         "added": added_count,
@@ -581,15 +784,15 @@ async def batch_add_funds(
 async def get_favorites() -> Dict:
     """
     获取收藏的基金列表
-    
+
     Returns:
         收藏的基金代码列表
     """
     import json
-    
+
     favorites_str = load_user_state("favorites")
     favorites = json.loads(favorites_str) if favorites_str else []
-    
+
     return {
         "count": len(favorites),
         "codes": favorites
@@ -600,20 +803,20 @@ async def get_favorites() -> Dict:
 async def set_favorites(request: FavoritesRequest) -> Dict:
     """
     设置/更新收藏列表
-    
+
     Args:
         request: 收藏设置请求
             - codes: 基金代码列表
             - mode: "replace" 替换, "add" 追加, "remove" 移除
-            
+
     Returns:
         更新后的收藏列表
     """
     import json
-    
+
     existing_str = load_user_state("favorites")
     existing = json.loads(existing_str) if existing_str else []
-    
+
     if request.mode == "replace":
         new_favorites = request.codes
     elif request.mode == "add":
@@ -622,9 +825,9 @@ async def set_favorites(request: FavoritesRequest) -> Dict:
         new_favorites = [c for c in existing if c not in request.codes]
     else:
         raise HTTPException(status_code=400, detail=f"Invalid mode: {request.mode}")
-    
+
     save_user_state("favorites", json.dumps(new_favorites))
-    
+
     return {
         "success": True,
         "count": len(new_favorites),

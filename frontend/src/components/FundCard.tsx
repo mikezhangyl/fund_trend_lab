@@ -5,6 +5,8 @@
 import { useMemo, useEffect, useState } from 'react';
 import { TrendChartEcharts } from './TrendChartEcharts';
 import { ChartModal } from './ChartModal';
+import { VolRatioMiniChart } from './VolRatioMiniChart';
+import { useVolatilityRatio } from '../hooks/useVolatilityRatio';
 import type { Instrument, TimeseriesPoint } from '../types';
 import { getIndicators, getSurgeEvents, getUptrendPhases, setFavorites, getFavorites, type IndicatorData, type SurgeEvent, type UptrendPhase } from '../services/api';
 
@@ -41,6 +43,8 @@ export function FundCard({
     const [isFavorite, setIsFavorite] = useState<boolean>(false);
     const [favoritesLoading, setFavoritesLoading] = useState<boolean>(true);
     const [allFavorites, setAllFavorites] = useState<string[]>([]);
+    // 获取波动率压缩比数据
+    const { data: volRatioData } = useVolatilityRatio(instrument.code, 365); // 最近1年数据
 
     // 加载收藏列表
     useEffect(() => {
@@ -246,6 +250,7 @@ export function FundCard({
                             height={160}
                             surgeEvents={surgeEvents}
                             uptrendPhases={filteredUptrendPhases}
+                            volRatioData={volRatioData}
                         />
                         {/* 放大图标 */}
                         <div style={{
@@ -265,6 +270,14 @@ export function FundCard({
                     </>
                 )}
             </div>
+
+            {/* 波动率压缩比迷你图 */}
+            {volRatioData && volRatioData.length > 0 && (
+                <VolRatioMiniChart
+                    data={volRatioData}
+                    fundData={fundData}
+                />
+            )}
 
             {/* 极值和技术指标 */}
             <div style={{

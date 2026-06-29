@@ -121,12 +121,45 @@ export function useAppState() {
     await api.saveUIState(newState);
   };
 
+  // 刷新所有基金数据（Mutation）
+  const refreshAll = useMutation({
+    mutationFn: async () => {
+      // 获取所有基金代码
+      const codes = state.instruments.map(inst => inst.code);
+
+      if (codes.length === 0) {
+        throw new Error('没有需要刷新的基金');
+      }
+
+      // 触发后台同步
+      await api.syncInstruments(codes);
+      return codes;
+    },
+    onSuccess: (codes) => {
+      console.log(`开始刷新 ${codes.length} 只基金的数据...`);
+
+      // 使所有基金的缓存失效，强制重新获取数据
+      codes.forEach(code => {
+        queryClient.invalidateQueries({ queryKey: ['chartData', code] });
+        queryClient.invalidateQueries({ queryKey: ['indicators', code] });
+        queryClient.invalidateQueries({ queryKey: ['surgeEvents', code] });
+        queryClient.invalidateQueries({ queryKey: ['uptrendPhases', code] });
+      });
+
+      // 也使 UI 状态失效
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState() });
+    },
+  });
+
+
   return {
     state,
     loading: isLoading,
     addInstrument: (code: string, name: string, type: 'fund' | 'etf' | 'index') =>
       addInstrument.mutateAsync({ code, name, type }),
     removeInstrument: (code: string) => removeInstrument.mutateAsync(code),
+    refreshAll: () => refreshAll.mutateAsync(),
+    isRefreshing: refreshAll.isPending,
     updateTimeRanges,
     updateSelectedIndex,
     addCustomRange,
